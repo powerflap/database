@@ -5,17 +5,25 @@ import com.example.hogwarts.model.Student;
 import com.example.hogwarts.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class StudentService {
+    private final StudentRepository repository;
 
-    private final StudentRepository studentRepository;
-
-    public StudentService(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
+    public StudentService(StudentRepository repository) {
+        this.repository = repository;
     }
 
-    public Faculty getFacultyByStudentId(Long studentId) {
-        Student student = studentRepository.findById(studentId).orElseThrow();
-        return student.getFaculty();
+    public int getStudentCount() {
+        return repository.getStudentCount();
+    }
+
+    public double getAverageAge() {
+        return repository.getAverageAge();
+    }
+
+    public List<Student> getLastFiveStudents() {
+        return repository.getLastFiveStudents();
     }
 }
