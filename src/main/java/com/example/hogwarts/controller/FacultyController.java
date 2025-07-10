@@ -1,13 +1,13 @@
 package com.example.hogwarts.controller;
 
-import com.example.hogwarts.model.Student;
+import com.example.hogwarts.model.Faculty;
 import com.example.hogwarts.service.FacultyService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/faculty")
+@RequestMapping("/faculties")
 public class FacultyController {
 
     private final FacultyService facultyService;
@@ -16,9 +16,13 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
-    // GET /faculty/{id}/students
-    @GetMapping("/{id}/students")
-    public List<Student> getStudentsByFacultyId(@PathVariable Long id) {
-        return facultyService.getStudentsByFacultyId(id);
+    @GetMapping("/search")
+    public List<Faculty> findByNameOrColor(@RequestParam String value) {
+        return facultyService.findByNameOrColor(value);
+    }
+
+    @GetMapping("/longest-name")
+    public String getLongestFacultyName() {
+        return facultyService.getLongestFacultyName();
     }
 }
