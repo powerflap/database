@@ -1,6 +1,5 @@
 package com.example.hogwarts.controller;
 
-import com.example.hogwarts.model.Faculty;
 import com.example.hogwarts.model.Student;
 import com.example.hogwarts.service.StudentService;
 import org.springframework.web.bind.annotation.*;
@@ -8,26 +7,27 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/student")
+@RequestMapping("/students")
 public class StudentController {
-    private final StudentService service;
 
-    public StudentController(StudentService service) {
-        this.service = service;
+    private final StudentService studentService;
+
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
 
-    @GetMapping("/count")
-    public int getCount() {
-        return service.getStudentCount();
+    @GetMapping("/age-range")
+    public List<Student> getStudentsByAgeRange(@RequestParam int min, @RequestParam int max) {
+        return studentService.findByAgeBetween(min, max);
+    }
+
+    @GetMapping("/names-starting-with-a")
+    public List<String> getNamesStartingWithA() {
+        return studentService.getNamesStartingWithA();
     }
 
     @GetMapping("/average-age")
     public double getAverageAge() {
-        return service.getAverageAge();
-    }
-
-    @GetMapping("/last-five")
-    public List<Student> getLastFive() {
-        return service.getLastFiveStudents();
+        return studentService.getAverageAge();
     }
 }
