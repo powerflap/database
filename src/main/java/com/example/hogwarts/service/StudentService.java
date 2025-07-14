@@ -2,59 +2,44 @@ package com.example.hogwarts.service;
 
 import com.example.hogwarts.model.Student;
 import com.example.hogwarts.repository.StudentRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.OptionalDouble;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
 
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
+    private final StudentRepository studentRepository;
 
-    private final StudentRepository repository;
-
-    public StudentService(StudentRepository repository) {
-        this.repository = repository;
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
     }
 
-    public Student createStudent(Student student) {
-        logger.info("Was invoked method createStudent");
-        Student saved = repository.save(student);
-        logger.debug("Student saved: {}", saved);
-        return saved;
+    public List<Student> findByAgeBetween(int min, int max) {
+        logger.info("Was invoked method for finding students with age between {} and {}", min, max);
+        return studentRepository.findByAgeBetween(min, max);
     }
 
-    public Student getStudent(Long id) {
-        logger.info("Was invoked method getStudent, id={}", id);
-        return repository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("There is no student with id={}", id);
-                    return new EntityNotFoundException("Student not found");
-                });
+    public List<String> getNamesStartingWithA() {
+        logger.info("Was invoked method for getting names starting with A");
+        return studentRepository.findAll().stream()
+                .map(Student::getName)
+                .filter(name -> name != null && name.toUpperCase().startsWith("А"))
+                .map(String::toUpperCase)
+                .sorted()
+                .collect(Collectors.toList());
     }
 
-    public List<Student> getAllStudents() {
-        logger.info("Was invoked method getAllStudents");
-        return repository.findAll();
-    }
-
-    public Student updateStudent(Long id, Student student) {
-        logger.info("Was invoked method updateStudent, id={}", id);
-        Student existing = getStudent(id);
-        existing.setName(student.getName());
-        existing.setAge(student.getAge());
-        existing.setFaculty(student.getFaculty());
-        Student updated = repository.save(existing);
-        logger.debug("Updated student: {}", updated);
-        return updated;
-    }
-
-    public void deleteStudent(Long id) {
-        logger.warn("Deleting student with id={}", id);
-        repository.deleteById(id);
+    public double getAverageAge() {
+        logger.info("Was invoked method for getting average age of students");
+        OptionalDouble average = studentRepository.findAll().stream()
+                .mapToInt(Student::getAge)
+                .average();
+        return average.orElse(0);
     }
 }
-
