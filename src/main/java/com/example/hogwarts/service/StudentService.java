@@ -42,4 +42,57 @@ public class StudentService {
                 .average();
         return average.orElse(0);
     }
+    public void printStudentsParallel() {
+        List<Student> students = studentRepository.findAll();
+
+        if (students.size() < 6) {
+            logger.warn("Недостаточно студентов для демонстрации: найдено {}", students.size());
+            return;
+        }
+
+        System.out.println(students.get(0).getName());
+        System.out.println(students.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            System.out.println(students.get(2).getName());
+            System.out.println(students.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+            System.out.println(students.get(4).getName());
+            System.out.println(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+    }
+    private synchronized void printStudentName(String name) {
+        System.out.println(name);
+    }
+
+    public void printStudentsSynchronized() {
+        List<Student> students = studentRepository.findAll();
+
+        if (students.size() < 6) {
+            logger.warn("Недостаточно студентов для демонстрации: найдено {}", students.size());
+            return;
+        }
+
+        printStudentName(students.get(0).getName());
+        printStudentName(students.get(1).getName());
+
+        Thread thread1 = new Thread(() -> {
+            printStudentName(students.get(2).getName());
+            printStudentName(students.get(3).getName());
+        });
+
+        Thread thread2 = new Thread(() -> {
+            printStudentName(students.get(4).getName());
+            printStudentName(students.get(5).getName());
+        });
+
+        thread1.start();
+        thread2.start();
+    }
+
 }
